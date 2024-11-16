@@ -40,10 +40,11 @@ type renderer struct {
 }
 
 func (rend *renderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast.WalkStatus {
-	// fmt.Println(reflect.TypeOf(node), entering)
+	//fmt.Printf("%s %t [%v]\n", reflect.TypeOf(node), entering, node)
+
 	if !entering {
 		switch node.(type) {
-		case *ast.Link, *ast.TableCell, *ast.TableBody, *ast.TableHeader:
+		case *ast.Link, *ast.TableCell, *ast.TableBody, *ast.TableHeader, *ast.Strong, *ast.Emph, *ast.Del:
 			break
 		default:
 			fmt.Fprint(w, "\n")
@@ -58,7 +59,7 @@ func (rend *renderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast.
 		for _, child := range blockquote.Children {
 			childData := markdown.Render(child, rend)
 			data := strings.TrimSpace(string(childData))
-			fmt.Fprintf(w, "> %s", data)
+			fmt.Fprintf(w, "\n> %s", data)
 		}
 		return ast.SkipChildren
 	case *ast.Code:
@@ -161,7 +162,7 @@ func (rend *renderer) RenderNode(w io.Writer, node ast.Node, entering bool) ast.
 		if len(table.Children) > 1 {
 			bodyNode := table.Children[1].AsContainer()
 			for _, child := range bodyNode.Children {
-				childData += fmt.Sprintf("%s", string(markdown.Render(child, rend)))
+				childData += string(markdown.Render(child, rend))
 
 			}
 		}

@@ -119,6 +119,15 @@ func Test_Converter_Parse(t *testing.T) {
 			expected: "```\ncode block\n```",
 		},
 		{
+			input: `
+~~whitespace~~
+
+> matters
+`,
+			expected: "~whitespace~\n\n> matters",
+		},
+
+		{
 			input:    "\tindented code block\n\twith two lines",
 			expected: "```\nindented code block\nwith two lines\n```",
 		},
@@ -128,11 +137,29 @@ func Test_Converter_Parse(t *testing.T) {
 		},
 		{
 			input: `
+* **Love**: A condition which causes extreme joy and bad decisions
+* **Hate**: A condition which causes sadness and bad decisions
+			`,
+			expected: "• *Love*: A condition which causes extreme joy and bad decisions\n• *Hate*: A condition which causes sadness and bad decisions",
+		},
+		{
+			input: `
+* _Love_: A condition which causes extreme joy and bad decisions
+* _Hate_: A condition which causes sadness and bad decisions
+			`,
+			expected: "• _Love_: A condition which causes extreme joy and bad decisions\n• _Hate_: A condition which causes sadness and bad decisions",
+		},
+		{
+			input:    "The filename is `wooble.go`, thanks.",
+			expected: "The filename is `wooble.go`, thanks.",
+		},
+		{
+			input: `
 | Header 1 | Header 2 | Header 3 |
 | --- | --- | --- |
 | short value | longer value | really long value |
 | qwerty | asdfgh | zxcvbn |
-			`,
+`,
 			expected: "*Header 1*   *Header 2*    *Header 3*\nshort value  longer value  really long value\nqwerty       asdfgh        zxcvbn",
 		},
 		{
@@ -176,7 +203,19 @@ _This is italic text_
 | short value | longer value | really long value |
 | qwerty | asdfgh | zxcvbn |
 `,
-			expected: "*Heading 1*\n\n*Heading 2*\n\n*Heading 3*\n\n*Heading 4*\n\n*Heading 5*\n\n*Heading 6*\n\n*This is bold text*\n\n\n*This is bold text*\n\n\n_This is italic text_\n\n\n_This is italic text_\n\n\n~Strikethrough~\n\n> blockquote\n• one\n• two\n• three\n\n1. one\n2. two\n3. three\n\n\n<https://github.com/evilmonkeyinc|evilmonkeyinc>\n\n*Header 1*   *Header 2*    *Header 3*\nshort value  longer value  really long value\nqwerty       asdfgh        zxcvbn",
+			expected: "*Heading 1*\n\n*Heading 2*\n\n*Heading 3*\n\n*Heading 4*\n\n*Heading 5*\n\n*Heading 6*\n\n*This is bold text*\n\n*This is bold text*\n\n_This is italic text_\n\n_This is italic text_\n\n~Strikethrough~\n\n> blockquote\n• one\n• two\n• three\n\n1. one\n2. two\n3. three\n\n\n<https://github.com/evilmonkeyinc|evilmonkeyinc>\n\n*Header 1*   *Header 2*    *Header 3*\nshort value  longer value  really long value\nqwerty       asdfgh        zxcvbn",
+		},
+		{
+			input: `
+# Heading 1
+
+## Heading 2 
+`,
+			expected: "*Heading 1*\n\n*Heading 2*",
+		},
+		{
+			input:    `Well.  What a **bold** way to __assert__ yourself!  its *courageous* and _classy_ but not ~~annoying~~.`,
+			expected: `Well.  What a *bold* way to *assert* yourself!  its _courageous_ and _classy_ but not ~annoying~.`,
 		},
 	}
 
